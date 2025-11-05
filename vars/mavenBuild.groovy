@@ -3,7 +3,7 @@
 def call(Map params = [:]) {
     String pom = params.get('pom', 'pom.xml')
     String goals = params.get('goals', 'clean package -DskipTests=true')
-    String mavenToolName = params.get('mavenTool', 'Maven 3.6.3') // adjust to your configured tool name
+    String mavenToolName = params.get('maven', 'Maven 3.8.7') // adjust to your configured tool name
 
     echo "Running Maven build: pom=${pom}, goals='${goals}'"
 
