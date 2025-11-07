@@ -20,3 +20,19 @@ def call(String imageName = "java-app:latest") {
         echo "Docker Image ${imageName} Built Successfully!"
     }
 }
+
+
+
+// def call(String imageName = "java-app:latest", String dockerfileDir = ".", String targetDir = ".") {
+//     stage('Docker Build') {
+//         echo "Building Docker image from specific directory..."
+        
+//         dir(targetDir) {
+//             echo "Building Docker image: ${imageName}"
+//             sh """
+//                 docker build -t ${imageName} -f ${dockerfileDir}/Dockerfile .
+//             """
+//             echo "Docker Image ${imageName} Built Successfully!"
+//         }
+//     }
+// }
