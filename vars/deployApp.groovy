@@ -7,13 +7,18 @@ def call(Map params = [:]) {
 
     node {
         try {
-            stage('Maven Build') {
-                echo "Starting Maven Build"
-                sh '''
-                    mvn clean package -DskipTests
-                '''
-                echo "Completion of Maven Build"
-            }
+              stage('Maven Build') {
+                    echo "Starting Maven Build"
+                    // Print workspace for debugging:
+                    sh 'echo "JENKINS env.WORKSPACE: ${env.WORKSPACE}"; pwd; ls -la'
+
+                   // Run mvn from the pipeline workspace (where the app repo was checked out)
+                   sh """
+                     cd "${env.WORKSPACE}"
+                     mvn clean package -DskipTests
+                   """
+                    echo "Completion of Maven Build"
+              }
 
             stage('Docker Build') {
                 echo "Creating Dockerfile dynamically..."
@@ -57,8 +62,6 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
         }
     }
 }
-
-
 
 
 // def call(Map params = [:]) {
