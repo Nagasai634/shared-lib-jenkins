@@ -1,8 +1,5 @@
-// Jenkins shared-library step: combined Maven build, Docker build and Docker run
-// Save this file under vars/ (for example: vars/deployApp.groovy)
-
+// vars/deployApp.groovy
 def call(Map params = [:]) {
-    // Parameters with sensible defaults
     String imageName     = params.get('imageName', 'java-app:latest')
     String containerName = params.get('containerName', 'java-app-container')
     int    hostPort      = (params.get('hostPort') ?: 8080) as int
@@ -20,7 +17,6 @@ def call(Map params = [:]) {
 
             stage('Docker Build') {
                 echo "Creating Dockerfile dynamically..."
-
                 writeFile file: 'Dockerfile', text: '''
 FROM eclipse-temurin:21-jdk-jammy
 WORKDIR /app
@@ -28,7 +24,6 @@ COPY target/*.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
 '''
-
                 echo "Dockerfile created (contents):"
                 sh 'cat Dockerfile'
 
@@ -42,9 +37,10 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
             stage('Docker Run') {
                 echo "Running container '${containerName}' from image '${imageName}' ..."
 
-                // Remove existing container with same name if present (safe restart)
+                // NOTE: escape any literal shell $ as \$ so Groovy GString doesn't try to parse it
                 sh """
-                    if [ $(docker ps -a -q -f name=${containerName} | wc -l) -gt 0 ]; then
+                    # if an existing container with this name exists, remove it
+                    if [ \$(docker ps -a -q -f name=${containerName} | wc -l) -gt 0 ]; then
                       echo "Removing existing container ${containerName}..."
                       docker rm -f ${containerName} || true
                     fi
@@ -61,6 +57,7 @@ ENTRYPOINT ["java", "-jar", "app.jar"]
         }
     }
 }
+
 
 
 
